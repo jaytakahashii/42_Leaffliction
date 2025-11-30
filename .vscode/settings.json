@@ -42,6 +42,7 @@
     "pytorch",
     "regularization",
     "relu",
+    "seaborn",
     "sklearn"
   ]
 }
