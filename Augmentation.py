@@ -1,9 +1,7 @@
 import argparse
 from pathlib import Path
 from tools.ImageAugmentor import ImageAugmentor
-
-
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png'}
+from tools.scanner import DirectoryScanner
 
 
 def get_args():
@@ -32,7 +30,7 @@ def main() -> None:
     save_dir = "augmented_directory" if args.eval else ""
     for path in paths:
         f = Path(path)
-        if f.suffix.lower() in IMAGE_EXTENSIONS:
+        if f.suffix.lower() in DirectoryScanner.IMAGE_EXTENSIONS:
             try:
                 img = ImageAugmentor(path)
             except ValueError as e:
