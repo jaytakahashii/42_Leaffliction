@@ -1,6 +1,7 @@
 import sys
 import argparse
 from tools.scanner import DirectoryScanner
+from tools.plotter import GraphPlotter
 
 
 def main() -> None:
@@ -23,6 +24,11 @@ def main() -> None:
 
     # 3. Print summary
     scanner.print_summary(data)
+
+    # 4. Plot distribution
+    print("\nGenerating charts...")
+    plotter = GraphPlotter(data)
+    plotter.plot()
 
 
 if __name__ == "__main__":

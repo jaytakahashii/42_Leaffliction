@@ -19,11 +19,14 @@
 
   // --- Spell Check (Allowing ML-specific Terms) ---
   "cSpell.words": [
+    "autopct",
     "autopep",
+    "barplot",
     "crossvalidation",
     "dataframe",
     "dataset",
     "featureengineering",
+    "fontsize",
     "hyperparameter",
     "jupyter",
     "librt",
@@ -43,6 +46,9 @@
     "regularization",
     "relu",
     "seaborn",
-    "sklearn"
+    "sklearn",
+    "startangle",
+    "xticklabels",
+    "xticks"
   ]
 }
