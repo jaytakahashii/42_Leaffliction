@@ -1,0 +1,47 @@
+{
+  // --- Basic Editor Settings ---
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit" // organize imports on save
+  },
+
+  // --- Python Specific Settings ---
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8",
+    "editor.tabSize": 4,
+    "editor.rulers": [88]
+  },
+
+  // --- Prettier Settings for Other Files ---
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+
+  // --- Spell Check (Allowing ML-specific Terms) ---
+  "cSpell.words": [
+    "autopep",
+    "crossvalidation",
+    "dataframe",
+    "dataset",
+    "featureengineering",
+    "hyperparameter",
+    "jupyter",
+    "librt",
+    "logits",
+    "loss",
+    "matplotlib",
+    "mccabe",
+    "mypy",
+    "ndarray",
+    "numpy",
+    "optimizer",
+    "pandas",
+    "pathspec",
+    "pycodestyle",
+    "pyflakes",
+    "pytorch",
+    "regularization",
+    "relu",
+    "sklearn"
+  ]
+}
