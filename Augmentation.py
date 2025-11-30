@@ -1,17 +1,15 @@
 import argparse
-from PIL import Image, ImageFilter
-import PIL.ImageEnhance
 from pathlib import Path
 from tools.ImageAugmentor import ImageAugmentor
 
 
 IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png'}
 
+
 def get_args():
     parser = argparse.ArgumentParser(
         description='This is a script that takes files from the command-line \
             arguments and creates augmented samples from them.',
-        epilog='使い方で迷ったら -h をつけて実行してください。'
     )
     parser.add_argument(
         "files",
@@ -27,7 +25,8 @@ def get_args():
     args = parser.parse_args()
     return args
 
-def main():
+
+def main() -> None:
     args = get_args()
     paths = args.files
     save_dir = "augmented_directory" if args.eval else ""
@@ -50,6 +49,9 @@ def main():
             for aug_img in augmented_images:
                 aug_img.save(save_dir)
                 aug_img.img.show()
+        else:
+            print(f"{f} is not available extension.")
+
 
 if __name__ == '__main__':
     main()
