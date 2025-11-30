@@ -50,7 +50,7 @@ def main() -> None:
                 aug_img.save(save_dir)
                 aug_img.img.show()
         else:
-            print(f"{f} is not available extension.")
+            print(f"Unavailable extension file: {f}")
 
 
 if __name__ == '__main__':
