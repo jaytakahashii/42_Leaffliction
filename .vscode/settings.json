@@ -9,7 +9,7 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.autopep8",
     "editor.tabSize": 4,
-    "editor.rulers": [88]
+    "editor.rulers": [120]
   },
 
   // --- Prettier Settings for Other Files ---
