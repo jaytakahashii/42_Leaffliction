@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  check_source_branch:
+  check-source-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Check if source is develop
