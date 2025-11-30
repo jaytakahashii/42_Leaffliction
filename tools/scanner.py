@@ -9,7 +9,7 @@ class DirectoryScanner:
     """
 
     # Define supported image extensions
-    IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp'}
+    IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png'}
 
     def __init__(self, root_path: str):
         self.root_path: Path = Path(root_path)
