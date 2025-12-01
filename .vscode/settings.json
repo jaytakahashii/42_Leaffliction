@@ -19,6 +19,7 @@
 
   // --- Spell Check (Allowing ML-specific Terms) ---
   "cSpell.words": [
+    "Augmentor",
     "autopct",
     "autopep",
     "barplot",
