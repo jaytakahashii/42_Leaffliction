@@ -1,4 +1,3 @@
-import time
 import argparse
 from pathlib import Path
 from tools.ImageAugmentor import ImageAugmentor
