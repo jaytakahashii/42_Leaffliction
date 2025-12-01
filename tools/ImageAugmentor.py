@@ -10,8 +10,8 @@ class ImageAugmentor:
             img: Image.Image = Image.open(path)
             img.verify()
             self.img: Image.Image = Image.open(path)
-        except (OSError, IOError) as e:
-            raise ValueError(f"Can't open image {path}: {e}")
+        except (OSError, ValueError) as e:
+            raise ValueError(e)
         self.history: list[str] = []
         self.file = Path(path)
 
