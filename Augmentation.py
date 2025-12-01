@@ -26,7 +26,7 @@ def get_args():
     return args
 
 
-def show_images(augmented_images: dict) -> None:
+def show_images(augmented_images: dict, block: bool) -> None:
     names = list(augmented_images.keys())
     images = [augmented_images[name].img for name in names]
 
@@ -45,14 +45,13 @@ def show_images(augmented_images: dict) -> None:
         ax.axis('off')
 
     plt.tight_layout()
-    plt.show()
+    plt.show(block=block)
 
 
 def main() -> None:
     args = get_args()
     paths = args.files
     save_dir = "augmented_directory" if args.eval else ""
-    img_pool = []
     for path in paths:
         f = Path(path)
         if f.suffix.lower() in DirectoryScanner.IMAGE_EXTENSIONS:
@@ -72,11 +71,10 @@ def main() -> None:
             }
             for k, v in augmented_images.items():
                 v.save(save_dir)
-            img_pool.append(augmented_images)
+            show_images(augmented_images, False)
         else:
             print(f"Unavailable extension file: {f}")
-    for p in img_pool:
-        show_images(p)
+    plt.show()
 
 
 if __name__ == '__main__':
