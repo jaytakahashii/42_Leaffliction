@@ -1,6 +1,7 @@
 from PIL import Image, ImageEnhance, ImageFilter
 from pathlib import Path
 import copy
+import functools
 
 
 class ImageAugmentor:
@@ -16,6 +17,8 @@ class ImageAugmentor:
 
     @staticmethod
     def _augment_method(func):
+
+        @functools.wraps(func)
         def wrapper(self, *args, **kwargs):
             new = self.copy()
             func(new, *args, **kwargs)
