@@ -1,7 +1,10 @@
+import time
 import argparse
 from pathlib import Path
 from tools.ImageAugmentor import ImageAugmentor
 from tools.scanner import DirectoryScanner
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def get_args():
@@ -24,10 +27,33 @@ def get_args():
     return args
 
 
+def show_images(augmented_images: dict) -> None:
+    names = list(augmented_images.keys())
+    images = [augmented_images[name].img for name in names]
+
+    n = len(images)
+    cols = 3
+    rows = (n + cols - 1) // cols
+    fig, axes = plt.subplots(rows, cols, figsize=(4*cols, 4*rows))
+    axes = axes.flatten()
+
+    for ax, im, name in zip(axes, images, names):
+        ax.imshow(np.array(im.convert("RGB")))
+        ax.axis('off')
+        ax.set_title(name, fontsize=12)
+
+    for ax in axes[n:]:
+        ax.axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+
 def main() -> None:
     args = get_args()
     paths = args.files
     save_dir = "augmented_directory" if args.eval else ""
+    img_pool = []
     for path in paths:
         f = Path(path)
         if f.suffix.lower() in DirectoryScanner.IMAGE_EXTENSIONS:
@@ -36,19 +62,22 @@ def main() -> None:
             except ValueError as e:
                 print(e)
                 continue
-            augmented_images = [
-                img.rotate(),
-                img.shear(),
-                img.flip(),
-                img.contrast(),
-                img.blur(),
-                img.brightness()
-            ]
-            for aug_img in augmented_images:
-                aug_img.save(save_dir)
-                aug_img.img.show()
+            augmented_images = {
+                "Original": img,
+                "Rotate": img.rotate(),
+                "Shear": img.shear(),
+                "Flip": img.flip(),
+                "Contrast": img.contrast(),
+                "Blur": img.blur(),
+                "Brightness": img.brightness()
+            }
+            for k, v in augmented_images.items():
+                v.save(save_dir)
+            img_pool.append(augmented_images)
         else:
             print(f"Unavailable extension file: {f}")
+    for p in img_pool:
+        show_images(p)
 
 
 if __name__ == '__main__':
