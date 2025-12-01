@@ -26,7 +26,7 @@ def get_args():
     return args
 
 
-def show_images(augmented_images: dict, block: bool) -> None:
+def show_images(augmented_images: dict, block: bool = False) -> None:
     names = list(augmented_images.keys())
     images = [augmented_images[name].img for name in names]
 
@@ -69,9 +69,9 @@ def main() -> None:
                 "Blur": img.blur(),
                 "Brightness": img.brightness()
             }
-            for k, v in augmented_images.items():
+            for v in augmented_images.values():
                 v.save(save_dir)
-            show_images(augmented_images, False)
+            show_images(augmented_images)
         else:
             print(f"Unavailable extension file: {f}")
     plt.show()
