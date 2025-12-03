@@ -40,6 +40,7 @@
     "mypy",
     "ndarray",
     "numpy",
+    "opencv",
     "optimizer",
     "pandas",
     "pathspec",
