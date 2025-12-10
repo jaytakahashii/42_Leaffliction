@@ -10,6 +10,8 @@ class ImageTransformer:
     UPPER_GREEN = np.array([90, 255, 255])
     LOWER_BROWN = np.array([10, 40, 40])
     UPPER_BROWN = np.array([25, 255, 255])
+    GREEN_RBG = (0, 255, 0)
+    BLUE_RBG = (0, 0, 255)
 
     def __init__(self, path: str):
         self.path: Path = Path(path)
@@ -86,15 +88,22 @@ class ImageTransformer:
         result = cv2.bitwise_and(self.img_rgb, self.img_rgb, mask=mask)
         return result
 
-    def analyze_object(self):
-        """Finds and draws contours of the leaf."""
+    def analyze_object(self) -> np.ndarray:
+        """
+        Finds and draws contours of the leaf.
+        Returns:
+            np.ndarray: Image with contours drawn.
+        """
         mask = self._create_mask()
+        # RETR_EXTERNAL: retrieve only the extreme outer contours
+        # CHAIN_APPROX_SIMPLE: compresses horizontal, vertical, and diagonal segments
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # Draw on a copy
         result = self.img_rgb.copy()
         # Draw all contours in green, thickness 2
-        cv2.drawContours(result, contours, -1, (0, 255, 0), 2)
+        # cv2.drawContours(image, contours, contourIdx, color, thickness)
+        cv2.drawContours(result, contours, -1, self.GREEN_RBG, 2)
         return result
 
     def roi_objects(self):
