@@ -166,8 +166,12 @@ class ImageTransformer:
 
         return result
 
-    def color_histogram(self):
-        """Generates a color histogram plot image."""
+    def color_histogram(self) -> np.ndarray:
+        """
+        Generates a color histogram plot image.
+        Returns:
+            np.ndarray: Image of the color histogram plot.
+        """
         # Split channels
         colors = ('r', 'g', 'b')
         channel_ids = (0, 1, 2)  # Note: self.img_rgb is RGB
@@ -190,15 +194,14 @@ class ImageTransformer:
         # Convert Matplotlib figure to NumPy array (Image)
         fig.canvas.draw()
 
-        # Matplotlib 3.8+ 対応: buffer_rgba() を使用して RGBA バッファを取得
         canvas_obj = cast(Any, fig.canvas)
         data = np.frombuffer(canvas_obj.buffer_rgba(), dtype=np.uint8)
         w, h = fig.canvas.get_width_height()
 
-        # Reshape (高さ, 幅, 4チャンネル)
+        # Reshape (height, width, 4)
         img_rgba = data.reshape((h, w, 4))
 
-        # RGBA -> RGB に変換 (アルファチャンネルを削除)
+        # RGBA -> RGB
         img_rgb = cv2.cvtColor(img_rgba, cv2.COLOR_RGBA2RGB)
 
         plt.close(fig)
