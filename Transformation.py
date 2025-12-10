@@ -149,6 +149,11 @@ def save_transformations(transformations: dict, original_path: Path, dst_root: s
 def main():
     args = get_args()
 
+    if (args.source and not args.destination) \
+            or (not args.source and args.destination):
+        print("Both -src and -dst must be provided for batch processing.")
+        sys.exit(1)
+
     # Mode 1: Batch Processing (-src and -dst provided)
     if args.source and args.destination:
         src_path = Path(args.source)
