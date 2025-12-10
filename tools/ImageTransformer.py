@@ -14,6 +14,7 @@ class ImageTransformer:
     BLUE_RGB = (0, 0, 255)
     RED_RGB = (255, 0, 0)
     MAGENTA_RGB = (255, 0, 255)
+    CIRCLE_RADIUS = 4
 
     def __init__(self, path: str):
         self.path: Path = Path(path)
@@ -152,7 +153,7 @@ class ImageTransformer:
                 cY = int(M["m01"] / M["m00"])
                 # cv2.circle(image, center, radius, color, thickness)
                 # -1 thickness fills the circle
-                cv2.circle(result, (cX, cY), 8, self.RED_RGB, -1)
+                cv2.circle(result, (cX, cY), self.CIRCLE_RADIUS, self.RED_RGB, -1)
 
             # 2. Extreme Points
             extLeft = tuple(c[c[:, :, 0].argmin()][0])
@@ -162,7 +163,7 @@ class ImageTransformer:
 
             # Draw points
             for point in [extLeft, extRight, extTop, extBot]:
-                cv2.circle(result, point, 8, self.MAGENTA_RGB, -1)
+                cv2.circle(result, point, self.CIRCLE_RADIUS, self.MAGENTA_RGB, -1)
 
         return result
 
