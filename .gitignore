@@ -211,3 +211,4 @@ images/
 leaves.zip
 *.zip
 augmented_directory
+converted_leaves*

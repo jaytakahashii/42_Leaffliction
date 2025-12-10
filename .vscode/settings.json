@@ -19,6 +19,7 @@
 
   // --- Spell Check (Allowing ML-specific Terms) ---
   "cSpell.words": [
+    "argmin",
     "Augmentor",
     "autopct",
     "autopep",
@@ -29,9 +30,15 @@
     "featureengineering",
     "figsize",
     "fontsize",
+    "frombuffer",
     "hyperparameter",
+    "imdecode",
+    "imread",
     "imshow",
+    "imwrite",
     "jupyter",
+    "ksize",
+    "Leaffliction",
     "librt",
     "logits",
     "loss",
@@ -40,9 +47,11 @@
     "mypy",
     "ndarray",
     "numpy",
+    "opencv",
     "optimizer",
     "pandas",
     "pathspec",
+    "Pseudolandmarks",
     "pycodestyle",
     "pyflakes",
     "pytorch",
@@ -51,6 +60,7 @@
     "seaborn",
     "sklearn",
     "startangle",
+    "xlim",
     "xticklabels",
     "xticks"
   ]
