@@ -26,9 +26,21 @@ class ImageTransformer:
         """Returns the original image in RGB."""
         return self.img_rgb
 
-    def gaussian_blur(self, ksize=(5, 5)):
-        """Applies Gaussian Blur to reduce noise."""
-        blurred = cv2.GaussianBlur(self.img_rgb, ksize, 0)
+    def gaussian_blur(self, ksize: tuple[int, int] = (5, 5)) -> np.ndarray:
+        """
+        Applies Gaussian Blur to reduce noise.
+        Args:
+            ksize (tuple): Kernel size for Gaussian Blur.
+            Must be odd and positive.
+        Returns:
+            np.ndarray: Blurred image.
+        Raises:
+            ValueError: If ksize is not odd and positive.
+        """
+        # check ksize validity
+        if ksize[0] % 2 == 0 or ksize[1] % 2 == 0 or (ksize[0] * ksize[1]) <= 0:
+            raise ValueError("Kernel size must be odd and positive integers.")
+        blurred: np.ndarray = cv2.GaussianBlur(self.img_rgb, ksize, 0)
         return blurred
 
     def _create_mask(self):
