@@ -1,8 +1,8 @@
 import cv2
+import io
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
-from typing import Any, cast
 
 
 class ImageTransformer:
@@ -201,16 +201,20 @@ class ImageTransformer:
 
         # Display the legend
         plt.legend(loc='upper right', fontsize='small')
-
         plt.tight_layout()
 
-        # Convert plot to image array
-        fig.canvas.draw()
-        canvas_obj = cast(Any, fig.canvas)
-        data: np.ndarray = np.frombuffer(canvas_obj.buffer_rgba(), dtype=np.uint8)
-        w, h = fig.canvas.get_width_height()
-        img_rgba: np.ndarray = data.reshape((h, w, 4))
-        img_rgb: np.ndarray = cv2.cvtColor(img_rgba, cv2.COLOR_RGBA2RGB)
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png', dpi=100)
+        buf.seek(0)
+
+        data = np.frombuffer(buf.getvalue(), dtype=np.uint8)
+        img_bgr = cv2.imdecode(data, cv2.IMREAD_COLOR)
+        if img_bgr is None:
+            raise ValueError("Failed to decode image from buffer.")
+
+        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+
+        buf.close()
         plt.close(fig)
 
         return img_rgb
