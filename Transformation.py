@@ -1,0 +1,153 @@
+import argparse
+import sys
+import cv2
+import matplotlib.pyplot as plt
+from pathlib import Path
+from tools.ImageTransformer import ImageTransformer
+from tools.scanner import DirectoryScanner
+
+
+def get_args():
+    parser = argparse.ArgumentParser(
+        description="Image Transformation tool for Leaffliction."
+    )
+    # Option 1: Direct file processing (Display mode)
+    parser.add_argument(
+        "files",
+        type=str,
+        nargs="*",
+        help="Path to image file(s) to process directly."
+    )
+    # Option 2: Batch processing (Save mode)
+    parser.add_argument(
+        "-src", "--source",
+        type=str,
+        help="Source directory containing images."
+    )
+    parser.add_argument(
+        "-dst", "--destination",
+        type=str,
+        help="Destination directory to save transformed images."
+    )
+    # Individual transformation flags (optional, but good for control)
+    parser.add_argument("-b", "--blur", action="store_true", help="Apply Gaussian Blur")
+    parser.add_argument("-m", "--mask", action="store_true", help="Apply Mask")
+    parser.add_argument("-a", "--analyze", action="store_true", help="Analyze Object (Contours)")
+    parser.add_argument("-r", "--roi", action="store_true", help="ROI Objects")
+    parser.add_argument("-p", "--pseudo", action="store_true", help="Pseudolandmarks")
+    parser.add_argument("-H", "--hist", action="store_true", help="Color Histogram")
+
+    return parser.parse_args()
+
+
+def process_single_image(path: str) -> dict | None:
+    """Runs all transformations on a single image and returns a dict of images."""
+    try:
+        transformer = ImageTransformer(path)
+    except (FileNotFoundError, ValueError) as e:
+        print(f"Error processing {path}: {e}")
+        return None
+
+    # Dictionary of "Title": Image_Array
+    transformations = {
+        "Original": transformer.get_original(),
+        "Gaussian Blur": transformer.gaussian_blur(),
+        "Mask": transformer.apply_mask(),
+        "Roi Objects": transformer.roi_objects(),
+        "Analyze Object": transformer.analyze_object(),
+        "Pseudolandmarks": transformer.pseudo_landmarks(),
+        "Color Histogram": transformer.color_histogram(),
+    }
+    return transformations
+
+
+def display_transformations(transformations: dict) -> None:
+    """Displays the transformations using Matplotlib."""
+    if not transformations:
+        return
+
+    n = len(transformations)
+    cols = 3
+    rows = (n + cols - 1) // cols
+
+    plt.figure(figsize=(15, 5 * rows))
+
+    for i, (name, img) in enumerate(transformations.items()):
+        plt.subplot(rows, cols, i + 1)
+        plt.title(name)
+        plt.imshow(img)
+        plt.axis('off')  # Hide axes for images
+        if name == "Color Histogram":
+            plt.axis('on')  # Keep axes for histogram plot
+            plt.axis('off')  # Actually, since we converted plot to img, keep off is cleaner
+
+    plt.tight_layout()
+    plt.show()
+
+
+def save_transformations(transformations: dict, original_path: Path, dst_root: str, src_root: str) -> None:
+    """Saves transformed images to the destination directory maintaining structure."""
+
+    # Calculate relative path to maintain subdirectory structure
+    # e.g. source/Apple/healthy/img.jpg -> Apple/healthy
+    rel_path = original_path.parent.relative_to(src_root)
+    save_dir = Path(dst_root) / rel_path
+
+    save_dir.mkdir(parents=True, exist_ok=True)
+
+    stem = original_path.stem
+    suffix = original_path.suffix
+
+    for name, img in transformations.items():
+        if name == "Original":
+            continue  # Don't resave original
+
+        # Clean name for filename (e.g. "Gaussian Blur" -> "Gaussian_Blur")
+        suffix_name = name.replace(" ", "_")
+        file_name = f"{stem}_{suffix_name}{suffix}"
+        save_path = save_dir / file_name
+
+        # Convert RGB back to BGR for OpenCV saving
+        img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(str(save_path), img_bgr)
+
+    print(f"Saved transformations for {original_path.name}")
+
+
+def main():
+    args = get_args()
+
+    # Mode 1: Batch Processing (-src and -dst provided)
+    if args.source and args.destination:
+        print(f"Processing directory: {args.source} -> {args.destination}")
+        # scanner = DirectoryScanner(args.source)  # Removed as it is unused
+
+        # DirectoryScanner finds files, but we need to iterate them
+        # Re-using logic similar to Distribution.py/Augmentation.py
+        src_path = Path(args.source)
+
+        if not src_path.exists():
+            print("Source directory does not exist.")
+            sys.exit(1)
+
+        for file_path in src_path.rglob('*'):
+            if file_path.is_file() and file_path.suffix.lower() in DirectoryScanner.IMAGE_EXTENSIONS:
+                trans = process_single_image(str(file_path))
+                if trans:
+                    save_transformations(trans, file_path, args.destination, args.source)
+
+    # Mode 2: Direct File Display (files provided)
+    elif args.files:
+        for file_path in args.files:
+            print(f"Displaying transformations for: {file_path}")
+            trans = process_single_image(str(file_path))
+            if trans:
+                display_transformations(trans)
+
+    else:
+        print("Please provide files to process or use -src and -dst arguments.")
+        print("Use -h for help.")
+
+
+if __name__ == "__main__":
+    main()
