@@ -175,34 +175,41 @@ class ImageTransformer:
         # Split channels
         colors = ('r', 'g', 'b')
         channel_ids = (0, 1, 2)  # Note: self.img_rgb is RGB
+        channel_names = {'r': 'Red', 'g': 'Green', 'b': 'Blue'}
 
-        # Create a figure using matplotlib
         fig = plt.figure(figsize=(4, 3), dpi=100)
         plt.title("Color Histogram")
-        plt.xlabel("Bins")
-        plt.ylabel("# of Pixels")
+        plt.xlabel("Pixel intensity")
+        plt.ylabel("Proportion of pixels")
 
         mask = self._create_mask()
 
+        # calculate total number of pixels in the mask
+        mask_pixel_count = cv2.countNonZero(mask)
+
         for channel_id, color in zip(channel_ids, colors):
             hist = cv2.calcHist([self.img_rgb], [channel_id], mask, [256], [0, 256])
-            plt.plot(hist, color=color)
+
+            # modify normalization to avoid division by zero
+            if mask_pixel_count > 0:
+                hist = hist / mask_pixel_count
+
+            # Add labels for the legend
+            plt.plot(hist, color=color, label=channel_names[color])
             plt.xlim([0, 256])
+
+        # Display the legend
+        plt.legend(loc='upper right', fontsize='small')
 
         plt.tight_layout()
 
-        # Convert Matplotlib figure to NumPy array (Image)
+        # Convert plot to image array
         fig.canvas.draw()
-
         canvas_obj = cast(Any, fig.canvas)
-        data = np.frombuffer(canvas_obj.buffer_rgba(), dtype=np.uint8)
+        data: np.ndarray = np.frombuffer(canvas_obj.buffer_rgba(), dtype=np.uint8)
         w, h = fig.canvas.get_width_height()
-
-        # Reshape (height, width, 4)
-        img_rgba = data.reshape((h, w, 4))
-
-        # RGBA -> RGB
-        img_rgb = cv2.cvtColor(img_rgba, cv2.COLOR_RGBA2RGB)
-
+        img_rgba: np.ndarray = data.reshape((h, w, 4))
+        img_rgb: np.ndarray = cv2.cvtColor(img_rgba, cv2.COLOR_RGBA2RGB)
         plt.close(fig)
+
         return img_rgb
