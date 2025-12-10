@@ -6,6 +6,11 @@ from typing import Any, cast
 
 
 class ImageTransformer:
+    LOWER_GREEN = np.array([25, 40, 40])
+    UPPER_GREEN = np.array([90, 255, 255])
+    LOWER_BROWN = np.array([10, 40, 40])
+    UPPER_BROWN = np.array([25, 255, 255])
+
     def __init__(self, path: str):
         self.path: Path = Path(path)
         if not self.path.exists():
@@ -43,27 +48,25 @@ class ImageTransformer:
         blurred: np.ndarray = cv2.GaussianBlur(self.img_rgb, ksize, 0)
         return blurred
 
-    def _create_mask(self):
-        """Internal method to create a binary mask of the leaf."""
+    def _create_mask(self) -> np.ndarray:
+        """
+        Internal method to create a binary mask of the leaf.
+        Returns:
+            np.ndarray: Binary mask where leaf areas are white (255) and background is black (0).
+        Raises:
+            ValueError: If image data is invalid.
+        """
         if self._mask is not None:
             return self._mask
 
-        # Convert to HSV color space (better for color filtering)
+        # Convert to HSV
         if self.img_bgr is None:
             raise ValueError("Image data is invalid or not loaded properly.")
         hsv = cv2.cvtColor(self.img_bgr, cv2.COLOR_BGR2HSV)
 
-        # Define range for green colors (healthy leaf)
-        lower_green = np.array([25, 40, 40])
-        upper_green = np.array([90, 255, 255])
-        mask_green = cv2.inRange(hsv, lower_green, upper_green)
-
-        # Define range for brown/yellow colors (diseased leaf parts)
-        lower_brown = np.array([10, 40, 40])
-        upper_brown = np.array([25, 255, 255])
-        mask_brown = cv2.inRange(hsv, lower_brown, upper_brown)
-
-        # Combine masks
+        # Create masks for green and brown colors
+        mask_green = cv2.inRange(hsv, self.LOWER_GREEN, self.UPPER_GREEN)
+        mask_brown = cv2.inRange(hsv, self.LOWER_BROWN, self.UPPER_BROWN)
         self._mask = cv2.bitwise_or(mask_green, mask_brown)
 
         # Clean up mask (Morphological operations) to remove small noise
