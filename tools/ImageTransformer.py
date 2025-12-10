@@ -7,22 +7,22 @@ from typing import Any, cast
 
 class ImageTransformer:
     def __init__(self, path: str):
-        self.path = Path(path)
+        self.path: Path = Path(path)
         if not self.path.exists():
             raise FileNotFoundError(f"File not found: {path}")
 
         # OpenCV loads in BGR format
-        self.img_bgr = cv2.imread(str(path))
+        self.img_bgr: np.ndarray | None = cv2.imread(str(path))
         if self.img_bgr is None:
             raise ValueError(f"Could not load image: {path}")
 
         # Keep an RGB version for Matplotlib display
-        self.img_rgb = cv2.cvtColor(self.img_bgr, cv2.COLOR_BGR2RGB)
+        self.img_rgb: np.ndarray = cv2.cvtColor(self.img_bgr, cv2.COLOR_BGR2RGB)
 
         # Cache for the mask to avoid recalculating it for every step
         self._mask: np.ndarray | None = None
 
-    def get_original(self):
+    def get_original(self) -> np.ndarray:
         """Returns the original image in RGB."""
         return self.img_rgb
 

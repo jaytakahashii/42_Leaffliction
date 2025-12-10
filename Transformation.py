@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from tools.ImageTransformer import ImageTransformer
 from tools.scanner import DirectoryScanner
+from typing import Any
 
 
-def get_args():
+def get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Image Transformation tool for Leaffliction."
     )
@@ -41,7 +42,14 @@ def get_args():
 
 
 def process_single_image(path: str) -> dict | None:
-    """Runs all transformations on a single image and returns a dict of images."""
+    """
+    Runs all transformations on a single image and returns a dict of images.
+    Args:
+        path (str): Path to the image file.
+    Returns:
+        dict: A dictionary with transformation names as keys and image arrays as values.
+        None: If the image could not be processed.
+    """
     try:
         transformer = ImageTransformer(path)
     except (FileNotFoundError, ValueError) as e:
@@ -49,11 +57,11 @@ def process_single_image(path: str) -> dict | None:
         return None
 
     # Dictionary of "Title": Image_Array
-    transformations = {
+    transformations: dict[str, Any] = {
         "Original": transformer.get_original(),
         "Gaussian Blur": transformer.gaussian_blur(),
         "Mask": transformer.apply_mask(),
-        "Roi Objects": transformer.roi_objects(),
+        "ROI Objects": transformer.roi_objects(),
         "Analyze Object": transformer.analyze_object(),
         "Pseudolandmarks": transformer.pseudo_landmarks(),
         "Color Histogram": transformer.color_histogram(),
@@ -103,13 +111,13 @@ def save_transformations(transformations: dict, original_path: Path, dst_root: s
             continue  # Don't resave original
 
         # Clean name for filename (e.g. "Gaussian Blur" -> "Gaussian_Blur")
-        suffix_name = name.replace(" ", "_")
-        file_name = f"{stem}_{suffix_name}{suffix}"
-        save_path = save_dir / file_name
+        suffix_name: str = name.replace(" ", "_")
+        file_name: str = f"{stem}_{suffix_name}{suffix}"
+        save_path: str = str(save_dir / file_name)
 
         # Convert RGB back to BGR for OpenCV saving
         img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(str(save_path), img_bgr)
+        cv2.imwrite(save_path, img_bgr)
 
     print(f"Saved transformations for {original_path.name}")
 
@@ -119,17 +127,12 @@ def main():
 
     # Mode 1: Batch Processing (-src and -dst provided)
     if args.source and args.destination:
-        print(f"Processing directory: {args.source} -> {args.destination}")
-        # scanner = DirectoryScanner(args.source)  # Removed as it is unused
-
-        # DirectoryScanner finds files, but we need to iterate them
-        # Re-using logic similar to Distribution.py/Augmentation.py
         src_path = Path(args.source)
-
         if not src_path.exists():
             print("Source directory does not exist.")
             sys.exit(1)
 
+        print(f"Processing directory: {args.source} -> {args.destination}")
         for file_path in src_path.rglob('*'):
             if file_path.is_file() and file_path.suffix.lower() in DirectoryScanner.IMAGE_EXTENSIONS:
                 trans = process_single_image(str(file_path))
