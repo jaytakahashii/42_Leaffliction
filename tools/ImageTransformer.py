@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+from typing import Any, cast
 
 
 class ImageTransformer:
@@ -151,14 +152,15 @@ class ImageTransformer:
         fig.canvas.draw()
 
         # Matplotlib 3.8+ 対応: buffer_rgba() を使用して RGBA バッファを取得
-        data = np.frombuffer(fig.canvas.buffer_rgba(), dtype=np.uint8)
+        canvas_obj = cast(Any, fig.canvas)
+        data = np.frombuffer(canvas_obj.buffer_rgba(), dtype=np.uint8)
         w, h = fig.canvas.get_width_height()
 
         # Reshape (高さ, 幅, 4チャンネル)
-        img_array = data.reshape((h, w, 4))
+        img_rgba = data.reshape((h, w, 4))
 
         # RGBA -> RGB に変換 (アルファチャンネルを削除)
-        img_array = cv2.cvtColor(img_array, cv2.COLOR_RGBA2RGB)
+        img_rgb = cv2.cvtColor(img_rgba, cv2.COLOR_RGBA2RGB)
 
         plt.close(fig)
-        return img_array
+        return img_rgb
