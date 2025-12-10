@@ -45,11 +45,12 @@ def get_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def process_single_image(path: str) -> dict[str, np.ndarray] | None:
+def process_single_image(path: str, args: argparse.Namespace) -> dict[str, np.ndarray] | None:
     """
     Runs all transformations on a single image and returns a dict of images.
     Args:
         path (str): Path to the image file.
+        args (argparse.Namespace): Parsed command-line arguments to control transformations.
     Returns:
         dict: A dictionary with transformation names as keys and image arrays as values.
         None: If the image could not be processed.
@@ -63,13 +64,22 @@ def process_single_image(path: str) -> dict[str, np.ndarray] | None:
     # Dictionary of "Title": Image_Array (np.ndarray)
     transformations: dict[str, np.ndarray] = {
         "Original": transformer.get_original(),
-        "Gaussian Blur": transformer.gaussian_blur(),
-        "Mask": transformer.apply_mask(),
-        "ROI Objects": transformer.roi_objects(),
-        "Analyze Object": transformer.analyze_object(),
-        "Pseudolandmarks": transformer.pseudo_landmarks(),
-        "Color Histogram": transformer.color_histogram(),
     }
+    has_flags = any([args.blur, args.mask, args.analyze, args.roi, args.pseudo, args.hist])
+    run_all = not has_flags
+    if run_all or args.blur:
+        transformations["Gaussian Blur"] = transformer.gaussian_blur()
+    if run_all or args.mask:
+        transformations["Mask"] = transformer.apply_mask()
+    if run_all or args.analyze:
+        transformations["Analyzed Contours"] = transformer.analyze_object()
+    if run_all or args.roi:
+        transformations["ROI Objects"] = transformer.roi_objects()
+    if run_all or args.pseudo:
+        transformations["Pseudolandmarks"] = transformer.pseudo_landmarks()
+    if run_all or args.hist:
+        transformations["Color Histogram"] = transformer.color_histogram()
+
     return transformations
 
 
@@ -149,7 +159,7 @@ def main():
         print(f"Processing directory: {args.source} -> {args.destination}")
         for file_path in src_path.rglob('*'):
             if file_path.is_file() and file_path.suffix.lower() in DirectoryScanner.IMAGE_EXTENSIONS:
-                trans = process_single_image(str(file_path))
+                trans = process_single_image(str(file_path), args)
                 if trans:
                     save_transformations(trans, file_path, args.destination, args.source)
 
@@ -157,7 +167,7 @@ def main():
     elif args.files:
         for file_path in args.files:
             print(f"Displaying transformations for: {file_path}")
-            trans = process_single_image(str(file_path))
+            trans = process_single_image(str(file_path), args)
             if trans:
                 display_transformations(trans)
 
