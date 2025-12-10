@@ -76,10 +76,13 @@ class ImageTransformer:
 
         return self._mask
 
-    def apply_mask(self):
-        """Applies the binary mask to the original image."""
+    def apply_mask(self) -> np.ndarray:
+        """
+        Applies the binary mask to the original image.
+        Returns:
+            np.ndarray: Image with the mask applied.
+        """
         mask = self._create_mask()
-        # Bitwise-AND mask and original image
         result = cv2.bitwise_and(self.img_rgb, self.img_rgb, mask=mask)
         return result
 
