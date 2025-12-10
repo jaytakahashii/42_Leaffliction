@@ -10,8 +10,8 @@ class ImageTransformer:
     UPPER_GREEN = np.array([90, 255, 255])
     LOWER_BROWN = np.array([10, 40, 40])
     UPPER_BROWN = np.array([25, 255, 255])
-    GREEN_RBG = (0, 255, 0)
-    BLUE_RBG = (0, 0, 255)
+    GREEN_RGB = (0, 255, 0)
+    BLUE_RGB = (0, 0, 255)
 
     def __init__(self, path: str):
         self.path: Path = Path(path)
@@ -103,14 +103,17 @@ class ImageTransformer:
         result = self.img_rgb.copy()
         # Draw all contours in green, thickness 2
         # cv2.drawContours(image, contours, contourIdx, color, thickness)
-        cv2.drawContours(result, contours, -1, self.GREEN_RBG, 2)
+        cv2.drawContours(result, contours, -1, self.GREEN_RGB, 2)
         return result
 
-    def roi_objects(self):
-        """Draws the Region of Interest (Bounding Box) around the leaf."""
+    def roi_objects(self) -> np.ndarray:
+        """
+        Draws the Region of Interest (Bounding Box) around the leaf.
+        Returns:
+            np.ndarray: Image with bounding box drawn.
+        """
         mask = self._create_mask()
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
         result = self.img_rgb.copy()
 
         if contours:
@@ -118,10 +121,11 @@ class ImageTransformer:
             c = max(contours, key=cv2.contourArea)
 
             # Get bounding rectangle
+            # x, y: top-left corner; w, h: width and height
             x, y, w, h = cv2.boundingRect(c)
 
             # Draw rectangle (Blue)
-            cv2.rectangle(result, (x, y), (x + w, y + h), (0, 0, 255), 3)
+            cv2.rectangle(result, (x, y), (x + w, y + h), self.BLUE_RGB, 3)
 
         return result
 
