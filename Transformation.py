@@ -5,7 +5,11 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from tools.ImageTransformer import ImageTransformer
 from tools.scanner import DirectoryScanner
-from typing import Any
+import numpy as np
+
+COLUMN = 3
+FIG_WIDTH = 15
+FIG_HEIGHT = 5
 
 
 def get_args() -> argparse.Namespace:
@@ -41,7 +45,7 @@ def get_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def process_single_image(path: str) -> dict | None:
+def process_single_image(path: str) -> dict[str, np.ndarray] | None:
     """
     Runs all transformations on a single image and returns a dict of images.
     Args:
@@ -56,8 +60,8 @@ def process_single_image(path: str) -> dict | None:
         print(f"Error processing {path}: {e}")
         return None
 
-    # Dictionary of "Title": Image_Array
-    transformations: dict[str, Any] = {
+    # Dictionary of "Title": Image_Array (np.ndarray)
+    transformations: dict[str, np.ndarray] = {
         "Original": transformer.get_original(),
         "Gaussian Blur": transformer.gaussian_blur(),
         "Mask": transformer.apply_mask(),
@@ -69,16 +73,20 @@ def process_single_image(path: str) -> dict | None:
     return transformations
 
 
-def display_transformations(transformations: dict) -> None:
-    """Displays the transformations using Matplotlib."""
+def display_transformations(transformations: dict[str, np.ndarray]) -> None:
+    """
+    Displays the transformations using Matplotlib.
+    Args:
+        transformations (dict): A dictionary with transformation names as keys and image arrays as values.
+    """
     if not transformations:
         return
 
     n = len(transformations)
-    cols = 3
+    cols = COLUMN
     rows = (n + cols - 1) // cols
 
-    plt.figure(figsize=(15, 5 * rows))
+    plt.figure(figsize=(FIG_WIDTH, FIG_HEIGHT * rows))
 
     for i, (name, img) in enumerate(transformations.items()):
         plt.subplot(rows, cols, i + 1)
@@ -86,7 +94,6 @@ def display_transformations(transformations: dict) -> None:
         plt.imshow(img)
         plt.axis('off')  # Hide axes for images
         if name == "Color Histogram":
-            plt.axis('on')  # Keep axes for histogram plot
             plt.axis('off')  # Actually, since we converted plot to img, keep off is cleaner
 
     plt.tight_layout()
@@ -94,17 +101,24 @@ def display_transformations(transformations: dict) -> None:
 
 
 def save_transformations(transformations: dict, original_path: Path, dst_root: str, src_root: str) -> None:
-    """Saves transformed images to the destination directory maintaining structure."""
+    """
+    Saves transformed images to the destination directory maintaining structure.
+    Args:
+        transformations (dict): A dictionary with transformation names as keys and image arrays as values.
+        original_path (Path): The original image file path.
+        dst_root (str): The root destination directory to save images.
+        src_root (str): The root source directory to maintain structure.
+    """
 
     # Calculate relative path to maintain subdirectory structure
     # e.g. source/Apple/healthy/img.jpg -> Apple/healthy
-    rel_path = original_path.parent.relative_to(src_root)
-    save_dir = Path(dst_root) / rel_path
+    rel_path: Path = original_path.parent.relative_to(src_root)
+    save_dir: Path = Path(dst_root) / rel_path
 
     save_dir.mkdir(parents=True, exist_ok=True)
 
-    stem = original_path.stem
-    suffix = original_path.suffix
+    stem: str = original_path.stem
+    suffix: str = original_path.suffix
 
     for name, img in transformations.items():
         if name == "Original":
@@ -116,7 +130,7 @@ def save_transformations(transformations: dict, original_path: Path, dst_root: s
         save_path: str = str(save_dir / file_name)
 
         # Convert RGB back to BGR for OpenCV saving
-        img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        img_bgr: np.ndarray = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
         cv2.imwrite(save_path, img_bgr)
 
     print(f"Saved transformations for {original_path.name}")
