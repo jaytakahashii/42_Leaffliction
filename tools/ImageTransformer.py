@@ -12,6 +12,8 @@ class ImageTransformer:
     UPPER_BROWN = np.array([25, 255, 255])
     GREEN_RGB = (0, 255, 0)
     BLUE_RGB = (0, 0, 255)
+    RED_RGB = (255, 0, 0)
+    MAGENTA_RGB = (255, 0, 255)
 
     def __init__(self, path: str):
         self.path: Path = Path(path)
@@ -129,11 +131,14 @@ class ImageTransformer:
 
         return result
 
-    def pseudo_landmarks(self):
-        """Finds geometric landmarks (centroid, top, bottom, etc.)."""
+    def pseudo_landmarks(self) -> np.ndarray:
+        """
+        Finds geometric landmarks (centroid, top, bottom, etc.).
+        Returns:
+            np.ndarray: Image with pseudolandmarks drawn.
+        """
         mask = self._create_mask()
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
         result = self.img_rgb.copy()
 
         if contours:
@@ -142,9 +147,12 @@ class ImageTransformer:
             # 1. Centroid (using moments)
             M = cv2.moments(c)
             if M["m00"] != 0:
+                # moments row: x = m10/m00, y = m01/m00
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])
-                cv2.circle(result, (cX, cY), 10, (255, 0, 0), -1)  # Red dot center
+                # cv2.circle(image, center, radius, color, thickness)
+                # -1 thickness fills the circle
+                cv2.circle(result, (cX, cY), 8, self.RED_RGB, -1)
 
             # 2. Extreme Points
             extLeft = tuple(c[c[:, :, 0].argmin()][0])
@@ -154,7 +162,7 @@ class ImageTransformer:
 
             # Draw points
             for point in [extLeft, extRight, extTop, extBot]:
-                cv2.circle(result, point, 8, (255, 0, 255), -1)  # Magenta dots
+                cv2.circle(result, point, 8, self.MAGENTA_RGB, -1)
 
         return result
 
