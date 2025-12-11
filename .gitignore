@@ -213,3 +213,6 @@ leaves.zip
 augmented_directory
 converted_leaves*
 dataset_prepared/
+
+# model
+*.pth
