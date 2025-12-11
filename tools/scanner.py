@@ -18,7 +18,7 @@ class DirectoryScanner:
         if not self.root_path.is_dir():
             raise NotADirectoryError(f"Path is not a directory: {self.root_path}")
 
-    def get_distribution(self) -> dict:
+    def get_distribution(self) -> dict[str, int]:
         """
         Scans the directory and returns a dictionary with the count of images per class (subdirectory).
         Returns:
@@ -39,7 +39,7 @@ class DirectoryScanner:
 
         return dict(distribution)
 
-    def print_summary(self, data: dict) -> None:
+    def print_summary(self, data: dict[str, int]) -> None:
         """
         Prints a summary of the image distribution.
         Args:

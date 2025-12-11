@@ -5,15 +5,30 @@ import functools
 
 
 class ImageAugmentor:
-    def __init__(self, path: str):
+    def __init__(self, input_data: str | Path | Image.Image):
+        self.img: Image.Image
+        self.history: list[str]
         try:
-            img: Image.Image = Image.open(path)
-            img.verify()
-            self.img: Image.Image = Image.open(path)
+            if isinstance(input_data, str) or isinstance(input_data, Path):
+                self.img = Image.open(input_data)
+                self.file = Path(input_data)
+                self.filename = self.file.stem
+            elif isinstance(input_data, Image.Image):
+                self.img = input_data
+                self.file = Path("memory")
+                self.filename = "aug"
+                self.history = []
+            else:
+                raise ValueError("Input must be a file path or PIL Image object.")
+
+            if not isinstance(input_data, Image.Image):
+                self.img.verify()
+                self.img = Image.open(input_data)
         except (OSError, ValueError) as e:
             raise ValueError(e)
-        self.history: list[str] = []
-        self.file = Path(path)
+
+        if not hasattr(self, 'history'):
+            self.history = []
 
     @staticmethod
     def _augment_method(func):
@@ -65,4 +80,5 @@ class ImageAugmentor:
         save_dir.mkdir(parents=True, exist_ok=True)
         save_path = save_dir / new_name
         print(f"Augmentation Picture was Saved at {save_path}")
+        print(f"Saved to directory: {save_dir}")
         self.img.save(save_path)
