@@ -15,6 +15,7 @@ class ImageTransformer:
     RED_RGB = (255, 0, 0)
     MAGENTA_RGB = (255, 0, 255)
     CIRCLE_RADIUS = 4
+    MARGIN = 10
 
     def __init__(self, path: str):
         self.path: Path = Path(path)
@@ -218,3 +219,26 @@ class ImageTransformer:
         plt.close(fig)
 
         return img_rgb
+
+    def get_cropped_roi(self) -> np.ndarray:
+        """
+        Returns the image cropped to the Region of Interest (Leaf area).
+        If no contour is found, returns the original image.
+        Returns:
+            np.ndarray: Cropped image of the leaf area.
+        """
+        mask = self._create_mask()
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        if contours:
+            c = max(contours, key=cv2.contourArea)
+            x, y, w, h = cv2.boundingRect(c)
+            img_h, img_w = self.img_rgb.shape[:2]
+            x_start = max(0, x - self.MARGIN)
+            y_start = max(0, y - self.MARGIN)
+            x_end = min(img_w, x + w + self.MARGIN)
+            y_end = min(img_h, y + h + self.MARGIN)
+
+            return self.img_rgb[y_start:y_end, x_start:x_end]
+
+        return self.img_rgb
