@@ -1,7 +1,8 @@
-import sys
 import argparse
-from tools.scanner import DirectoryScanner
+import sys
+
 from tools.plotter import GraphPlotter
+from tools.scanner import DirectoryScanner
 
 
 def main() -> None:
