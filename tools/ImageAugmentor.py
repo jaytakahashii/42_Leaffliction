@@ -80,4 +80,5 @@ class ImageAugmentor:
         save_dir.mkdir(parents=True, exist_ok=True)
         save_path = save_dir / new_name
         print(f"Augmentation Picture was Saved at {save_path}")
+        print(f"Saved to directory: {save_dir}")
         self.img.save(save_path)

@@ -224,6 +224,7 @@ class ImageTransformer:
         """
         Returns the image cropped to the Region of Interest (Leaf area).
         If no contour is found, returns the original image.
+        MARGIN is added around the bounding box. That's because tight cropping may cut off parts of the leaf.
         Returns:
             np.ndarray: Cropped image of the leaf area.
         """

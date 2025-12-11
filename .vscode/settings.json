@@ -30,6 +30,7 @@
     "featureengineering",
     "figsize",
     "fontsize",
+    "fromarray",
     "frombuffer",
     "hyperparameter",
     "imdecode",
@@ -38,6 +39,7 @@
     "imwrite",
     "jupyter",
     "ksize",
+    "LANCZOS",
     "Leaffliction",
     "librt",
     "logits",
@@ -60,6 +62,7 @@
     "seaborn",
     "sklearn",
     "startangle",
+    "tqdm",
     "xlim",
     "xticklabels",
     "xticks"
