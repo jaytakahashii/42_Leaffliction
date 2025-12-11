@@ -1,7 +1,8 @@
-from PIL import Image, ImageEnhance, ImageFilter
-from pathlib import Path
 import copy
 import functools
+from pathlib import Path
+
+from PIL import Image, ImageEnhance, ImageFilter
 
 
 class ImageAugmentor:

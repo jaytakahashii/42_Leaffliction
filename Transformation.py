@@ -1,11 +1,13 @@
 import argparse
 import sys
+from pathlib import Path
+
 import cv2
 import matplotlib.pyplot as plt
-from pathlib import Path
+import numpy as np
+
 from tools.ImageTransformer import ImageTransformer
 from tools.scanner import DirectoryScanner
-import numpy as np
 
 COLUMN = 4
 FIG_WIDTH = 15

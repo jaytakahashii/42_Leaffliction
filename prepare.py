@@ -1,13 +1,14 @@
-import shutil
 import random
+import shutil
 from pathlib import Path
-from PIL import Image
-from tqdm import tqdm
-import numpy as np
 from typing import Callable
 
-from tools.ImageTransformer import ImageTransformer
+import numpy as np
+from PIL import Image
+from tqdm import tqdm
+
 from tools.ImageAugmentor import ImageAugmentor
+from tools.ImageTransformer import ImageTransformer
 from tools.scanner import DirectoryScanner
 
 TARGET_SIZE = (256, 256)
