@@ -16,6 +16,10 @@ class ImageTransformer:
     MAGENTA_RGB = (255, 0, 255)
     CIRCLE_RADIUS = 4
     MARGIN = 10
+    FONT_SIZE_LARGE = 24
+    FONT_SIZE_MEDIUM = 20
+    FONT_SIZE_SMALL = 18
+    PLOT_LINE_WIDTH = 2.5
 
     def __init__(self, path: str):
         self.path: Path = Path(path)
@@ -179,14 +183,16 @@ class ImageTransformer:
         channel_ids = (0, 1, 2)  # Note: self.img_rgb is RGB
         channel_names = {'r': 'Red', 'g': 'Green', 'b': 'Blue'}
 
-        fig = plt.figure(figsize=(4, 3), dpi=100)
-        plt.title("Color Histogram")
-        plt.xlabel("Pixel intensity")
-        plt.ylabel("Proportion of pixels")
+        fig = plt.figure(figsize=(12, 8), dpi=200)
+        plt.xlabel("Pixel intensity", fontsize=self.FONT_SIZE_LARGE)
+        plt.ylabel("Proportion of pixels(%)", fontsize=self.FONT_SIZE_LARGE)
+        plt.xticks(fontsize=self.FONT_SIZE_MEDIUM)
+        plt.yticks(fontsize=self.FONT_SIZE_MEDIUM)
 
         mask = self._create_mask()
 
         # calculate total number of pixels in the mask
+        # --- RGB ---
         mask_pixel_count = cv2.countNonZero(mask)
 
         for channel_id, color in zip(channel_ids, colors):
@@ -194,18 +200,56 @@ class ImageTransformer:
 
             # modify normalization to avoid division by zero
             if mask_pixel_count > 0:
-                hist = hist / mask_pixel_count
+                hist = (hist / mask_pixel_count) * 100
 
             # Add labels for the legend
-            plt.plot(hist, color=color, label=channel_names[color])
+            plt.plot(hist, color=color, linewidth=self.PLOT_LINE_WIDTH, label=channel_names[color])
             plt.xlim([0, 256])
 
-        # Display the legend
-        plt.legend(loc='upper right', fontsize='small')
+        # --- HSV ---
+        img_bgr: np.ndarray | None = cv2.cvtColor(self.img_rgb, cv2.COLOR_RGB2BGR)
+        assert img_bgr is not None, "Failed to decode image from buffer."
+        hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+        hsv_colors = ('purple', 'cyan', 'orange')
+        hsv_ids = (0, 1, 2)
+        hsv_names = {0: 'hue', 1: 'saturation', 2: 'value'}
+
+        for channel_id, color in zip(hsv_ids, hsv_colors):
+            bins = 180 if channel_id == 0 else 256
+            max_val = 180 if channel_id == 0 else 256
+
+            hist = cv2.calcHist([hsv], [channel_id], mask, [bins], [0, max_val])
+            if mask_pixel_count > 0:
+                hist = (hist / mask_pixel_count) * 100
+            plt.plot(hist, color=color, linewidth=self.PLOT_LINE_WIDTH, label=hsv_names[channel_id])
+            plt.xlim([0, max_val])
+
+        # --- Lab ---
+        lab = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2LAB)
+        lab_colors = ('gray', 'yellow', 'magenta')
+        lab_ids = (0, 1, 2)
+        lab_names = {0: 'lightness', 1: 'blue-yellow', 2: 'green-magenta'}
+
+        for channel_id, color in zip(lab_ids, lab_colors):
+            hist = cv2.calcHist([lab], [channel_id], mask, [256], [0, 256])
+            if mask_pixel_count > 0:
+                hist = (hist / mask_pixel_count) * 100
+            plt.plot(hist, color=color, linewidth=self.PLOT_LINE_WIDTH, label=lab_names[channel_id])
+            plt.xlim([0, 256])
+
+        handles, labels = plt.gca().get_legend_handles_labels()
+        order: list[int] = [2, 7, 1, 8, 3, 6, 0, 4, 5]
+        plt.legend(
+            [handles[i] for i in order],
+            [labels[i] for i in order],
+            loc='upper right',
+            fontsize=self.FONT_SIZE_MEDIUM,
+            title="color Channel",
+            title_fontsize=self.FONT_SIZE_LARGE)
         plt.tight_layout()
 
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=100)
+        plt.savefig(buf, format='png', dpi=200)
         buf.seek(0)
 
         data = np.frombuffer(buf.getvalue(), dtype=np.uint8)
