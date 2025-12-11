@@ -214,7 +214,6 @@ class ImageTransformer:
         hsv_names = {0: 'hue', 1: 'saturation', 2: 'value'}
 
         for channel_id, color in zip(hsv_ids, hsv_colors):
-            # Hueは範囲0-179、S,Vは0-255
             bins = 180 if channel_id == 0 else 256
             max_val = 180 if channel_id == 0 else 256
 
