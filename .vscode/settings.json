@@ -9,7 +9,7 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.autopep8",
     "editor.tabSize": 4,
-    "editor.rulers": [88]
+    "editor.rulers": [120]
   },
 
   // --- Prettier Settings for Other Files ---
@@ -19,13 +19,28 @@
 
   // --- Spell Check (Allowing ML-specific Terms) ---
   "cSpell.words": [
+    "argmin",
+    "Augmentor",
+    "autopct",
     "autopep",
+    "barplot",
     "crossvalidation",
     "dataframe",
     "dataset",
     "featureengineering",
+    "figsize",
+    "fontsize",
+    "fromarray",
+    "frombuffer",
     "hyperparameter",
+    "imdecode",
+    "imread",
+    "imshow",
+    "imwrite",
     "jupyter",
+    "ksize",
+    "LANCZOS",
+    "Leaffliction",
     "librt",
     "logits",
     "loss",
@@ -34,14 +49,28 @@
     "mypy",
     "ndarray",
     "numpy",
+    "opencv",
     "optimizer",
     "pandas",
     "pathspec",
+    "Pseudolandmarks",
     "pycodestyle",
     "pyflakes",
     "pytorch",
     "regularization",
     "relu",
-    "sklearn"
+    "seaborn",
+    "sklearn",
+    "startangle",
+<<<<<<< HEAD
+    "tqdm",
+=======
+    "xlabel",
+>>>>>>> develop
+    "xlim",
+    "xticklabels",
+    "xticks",
+    "ylabel",
+    "yticks"
   ]
 }
