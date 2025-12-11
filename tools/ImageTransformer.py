@@ -206,7 +206,8 @@ class ImageTransformer:
             plt.xlim([0, 256])
 
         # --- HSV ---
-        img_bgr = cv2.cvtColor(self.img_rgb, cv2.COLOR_RGB2BGR)
+        img_bgr: np.ndarray | None = cv2.cvtColor(self.img_rgb, cv2.COLOR_RGB2BGR)
+        assert img_bgr is not None, "Failed to decode image from buffer."
         hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
         hsv_colors = ('purple', 'cyan', 'orange')
         hsv_ids = (0, 1, 2)
