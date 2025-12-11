@@ -62,15 +62,13 @@
     "seaborn",
     "sklearn",
     "startangle",
-<<<<<<< HEAD
     "tqdm",
-=======
     "xlabel",
->>>>>>> develop
     "xlim",
     "xticklabels",
     "xticks",
     "ylabel",
-    "yticks"
+    "yticks",
+    "torchvision"
   ]
 }
