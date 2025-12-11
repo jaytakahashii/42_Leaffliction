@@ -7,7 +7,7 @@ from tools.ImageTransformer import ImageTransformer
 from tools.scanner import DirectoryScanner
 import numpy as np
 
-COLUMN = 3
+COLUMN = 4
 FIG_WIDTH = 15
 FIG_HEIGHT = 5
 
