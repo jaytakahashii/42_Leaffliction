@@ -9,7 +9,7 @@ import numpy as np
 
 COLUMN = 3
 FIG_WIDTH = 15
-FIG_HEIGHT = 5
+FIG_HEIGHT = 7
 
 
 def get_args() -> argparse.Namespace:
