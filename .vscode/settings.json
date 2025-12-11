@@ -60,8 +60,11 @@
     "seaborn",
     "sklearn",
     "startangle",
+    "xlabel",
     "xlim",
     "xticklabels",
-    "xticks"
+    "xticks",
+    "ylabel",
+    "yticks"
   ]
 }
