@@ -50,7 +50,7 @@ class SimpleCNN(nn.Module):
             nn.MaxPool2d(2, 2),  # 32 -> 16
         )
 
-        # 分類部 (Classifier)
+        # Classifier
         self.classifier = nn.Sequential(
             nn.Flatten(),
             nn.Linear(128 * 16 * 16, 512),
@@ -93,7 +93,20 @@ def get_data_loaders(data_dir: str) -> tuple[DataLoader, DataLoader, list[str]]:
     return train_loader, val_loader, train_dataset.classes
 
 
-def train(model: nn.Module, loader: DataLoader, criterion: nn.Module, optimizer: optim.Optimizer, device: torch.device) -> float:
+def train(
+    model: nn.Module, loader: DataLoader, criterion: nn.Module, optimizer: optim.Optimizer, device: torch.device
+) -> tuple[float, float]:
+    """
+    Trains the model for one epoch.
+    Args:
+        model (nn.Module): The neural network model.
+        loader (DataLoader): DataLoader for the training dataset.
+        criterion (nn.Module): Loss function.
+        optimizer (optim.Optimizer): Optimizer for training.
+        device (torch.device): Device to run the training on.
+    Returns:
+        tuple: (average_loss, accuracy)
+    """
     model.train()
     running_loss = 0.0
     correct = 0
@@ -118,7 +131,19 @@ def train(model: nn.Module, loader: DataLoader, criterion: nn.Module, optimizer:
     return avg_loss, accuracy
 
 
-def validate(model: nn.Module, loader: DataLoader, criterion: nn.Module, device: torch.device) -> float:
+def validate(
+    model: nn.Module, loader: DataLoader, criterion: nn.Module, device: torch.device
+) -> tuple[float, float]:
+    """
+    Evaluates the model on the validation dataset.
+    Args:
+        model (nn.Module): The neural network model.
+        loader (DataLoader): DataLoader for the validation dataset.
+        criterion (nn.Module): Loss function.
+        device (torch.device): Device to run the evaluation on.
+    Returns:
+        tuple: (average_loss, accuracy)
+    """
     model.eval()
     running_loss = 0.0
     correct = 0
@@ -142,7 +167,11 @@ def validate(model: nn.Module, loader: DataLoader, criterion: nn.Module, device:
 
 def create_submission_zip(source_dir: str, model_path: str, output_zip: str) -> None:
     """
-    データセットとモデルをZIPに固める（課題要件）
+    Creates a zip file containing the dataset and the trained model.
+    Args:
+        source_dir (str): Path to the prepared dataset directory.
+        model_path (str): Path to the trained model file.
+        output_zip (str): Path to the output zip file.
     """
     print(f"Creating submission zip: {output_zip}...")
     with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zipf:
@@ -176,12 +205,12 @@ def main():
         print(f"Error loading data: {e}")
         sys.exit(1)
 
-    # 2. モデル定義
+    # 2. Define model, loss function, optimizer
     model = SimpleCNN(num_classes=len(class_names)).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
-    # 3. 学習ループ
+    # 3. Loop over epochs
     best_acc = 0.0
 
     print("\nStarting training...")
@@ -193,7 +222,6 @@ def main():
               f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}% | "
               f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
 
-        # 90%を超えたら（あるいは最高精度なら）保存するロジックなどを入れても良い
         if val_acc > best_acc:
             best_acc = val_acc
             torch.save(model.state_dict(), MODEL_SAVE_NAME)
@@ -204,8 +232,7 @@ def main():
     else:
         print("Success: Target accuracy reached!")
 
-    # 4. ZIP作成 (要件対応)
-    # モデルはループ内でベストなものを保存済み
+    # 4. Create submission zip
     if Path(MODEL_SAVE_NAME).exists():
         create_submission_zip(args.directory, MODEL_SAVE_NAME, ZIP_NAME)
     else:
