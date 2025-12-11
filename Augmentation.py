@@ -1,9 +1,11 @@
 import argparse
 from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+
 from tools.ImageAugmentor import ImageAugmentor
 from tools.scanner import DirectoryScanner
-import numpy as np
-import matplotlib.pyplot as plt
 
 
 def get_args():
