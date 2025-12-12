@@ -1,7 +1,6 @@
 import argparse
 
 import matplotlib.pyplot as plt
-import numpy as np
 import torch
 import torch.nn as nn
 from PIL import Image
@@ -10,11 +9,10 @@ from torchvision import transforms
 from tools.ImageTransformer import ImageTransformer
 from tools.SimpleCNN import SimpleCNN
 
-# ハイパーパラメータ設定
+# Hyperparameters
 BATCH_SIZE = 32
 IMG_SIZE = (256, 256)
 MODEL_SAVE_NAME = "leaf_model.pth"
-NUM_CLASSES = 8
 
 
 def predict(
