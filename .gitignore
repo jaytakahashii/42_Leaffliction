@@ -216,3 +216,6 @@ dataset_prepared/
 
 # model
 *.pth
+
+# predict result
+predict.png

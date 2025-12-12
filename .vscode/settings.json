@@ -33,6 +33,8 @@
     "fontsize",
     "fromarray",
     "frombuffer",
+    "gridspec",
+    "hspace",
     "hyperparameter",
     "imdecode",
     "imread",
