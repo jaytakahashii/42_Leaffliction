@@ -77,17 +77,18 @@ def visualize(path: str, disease: str) -> None:
 def main():
     parser = argparse.ArgumentParser(description="Predict leaf disease classification.")
     parser.add_argument("file", help="image file path")
+    parser.add_argument("--model", type=str, default=MODEL_SAVE_NAME, help="model file name")
     args = parser.parse_args()
 
     # cuda: NVIDIA GPU, mps: Apple Silicon GPU, cpu: CPU
     device = torch.device("cuda" if torch.cuda.is_available()
                           else "mps" if torch.backends.mps.is_available() else "cpu")
     print(f"Using device: {device}")
-    checkpoint = torch.load(MODEL_SAVE_NAME, map_location=device)
-    model = SimpleCNN(num_classes=len(checkpoint["class_names"])).to(device)
 
     # 1. Load data
     try:
+        checkpoint = torch.load(args.model, map_location=device)
+        model = SimpleCNN(num_classes=len(checkpoint["class_names"])).to(device)
         model.load_state_dict(checkpoint["model_state_dict"])
         class_index = predict(model, device, args.file)
         visualize(args.file, checkpoint["class_names"][int(class_index)])
