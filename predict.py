@@ -70,6 +70,7 @@ def visualize(path: str, disease: str) -> None:
     )
 
     plt.subplots_adjust(top=0.95, bottom=0.05, hspace=0.2)
+    plt.savefig("predict.png")
     plt.show()
 
 
