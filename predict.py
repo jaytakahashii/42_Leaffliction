@@ -1,6 +1,7 @@
 import argparse
 
 import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torch.nn as nn
 from PIL import Image
@@ -46,21 +47,32 @@ def visualize(path: str, disease: str) -> None:
     transform = ImageTransformer(path)
     cropped = transform.get_cropped_roi()
     resize = Image.fromarray(cropped).resize(IMG_SIZE, Image.Resampling.LANCZOS)
+
     origin = transform.img_rgb
     transformed = resize
-    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 
-    # 左: 元画像
-    axes[0].imshow(origin)
-    axes[0].axis('off')
-    axes[0].set_title("Original")
+    fig = plt.figure(figsize=(10, 5))
+    gs = fig.add_gridspec(2, 2, height_ratios=[10, 1], hspace=0.05)
 
-    # 右: 加工後画像
-    axes[1].imshow(transformed)
-    axes[1].axis('off')
-    axes[1].set_title(disease)
+    ax0 = fig.add_subplot(gs[0, 0])
+    ax1 = fig.add_subplot(gs[0, 1])
+    ax_label = fig.add_subplot(gs[1, :])
 
-    plt.tight_layout()
+    ax0.imshow(origin)
+    ax0.axis('off')
+    ax0.set_title('Original')
+
+    ax1.imshow(transformed)
+    ax1.axis('off')
+    ax1.set_title('Transformed')
+
+    ax_label.axis('off')
+    ax_label.text(
+        0.5, 0.5, f"Class predicted : {disease}",
+        ha='center', va='center', fontsize=14, weight='bold'
+    )
+
+    plt.subplots_adjust(top=0.95, bottom=0.05, hspace=0.2)
     plt.show()
 
 
