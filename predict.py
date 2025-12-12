@@ -19,14 +19,13 @@ def predict(
     model: nn.Module, device: torch.device, path: str
 ) -> torch.Tensor:
     """
-    Evaluates the model on the validation dataset.
+    Predict the class index of the input image using the trained model.
     Args:
-        model (nn.Module): The neural network model.
-        loader (DataLoader): DataLoader for the validation dataset.
-        criterion (nn.Module): Loss function.
-        device (torch.device): Device to run the evaluation on.
+        model (nn.Module): The trained model for prediction.
+        device (torch.device): The device to run the model on.
+        path (str): The file path of the input image.
     Returns:
-        tuple: (average_loss, accuracy)
+        torch.Tensor: The predicted class index.
     """
     model.eval()
 
