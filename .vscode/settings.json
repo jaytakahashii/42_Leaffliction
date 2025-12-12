@@ -33,6 +33,7 @@
     "fontsize",
     "fromarray",
     "frombuffer",
+    "hspace",
     "hyperparameter",
     "imdecode",
     "imread",
