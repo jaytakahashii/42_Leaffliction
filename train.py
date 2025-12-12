@@ -11,9 +11,8 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from tqdm import tqdm
 
-# ハイパーパラメータ設定
+# Hyperparameters
 BATCH_SIZE = 32
-EPOCHS = 15
 LEARNING_RATE = 0.001
 IMG_SIZE = (256, 256)
 MODEL_SAVE_NAME = "leaf_model.pth"
@@ -25,8 +24,9 @@ class SimpleCNN(nn.Module):
     Model of a simple Convolutional Neural Network (CNN)
     """
 
-    def __init__(self, num_classes: int):
-        super(SimpleCNN, self).__init__()
+    def __init__(self, num_classes: int, input_size: tuple[int, int] = IMG_SIZE):
+        # super(SimpleCNN, self).__init__()
+        super().__init__()
         # Feature Extractor
         self.features = nn.Sequential(
             # Block 1
@@ -50,10 +50,18 @@ class SimpleCNN(nn.Module):
             nn.MaxPool2d(2, 2),  # 32 -> 16
         )
 
+        # To calculate the flatten size dynamically
+        # Use a dummy input tensor to infer the size after conv layers
+        dummy_input = torch.zeros(1, 3, input_size[0], input_size[1])
+        dummy_output = self.features(dummy_input)
+
+        # Calculate the size of the output (128 * 16 * 16)
+        self.flatten_size = dummy_output.view(1, -1).size(1)
+
         # Classifier
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(128 * 16 * 16, 512),
+            nn.Linear(self.flatten_size, 512),
             nn.ReLU(),
             nn.Dropout(0.5),
             nn.Linear(512, num_classes)
@@ -87,8 +95,8 @@ def get_data_loaders(data_dir: str) -> tuple[DataLoader, DataLoader, list[str]]:
     train_dataset: datasets.ImageFolder = datasets.ImageFolder(root=str(train_dir), transform=transform)
     val_dataset: datasets.ImageFolder = datasets.ImageFolder(root=str(val_dir), transform=transform)
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
+    train_loader: DataLoader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+    val_loader: DataLoader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
     return train_loader, val_loader, train_dataset.classes
 
@@ -190,6 +198,7 @@ def create_submission_zip(source_dir: str, model_path: str, output_zip: str) -> 
 def main():
     parser = argparse.ArgumentParser(description="Train a CNN for leaf disease classification.")
     parser.add_argument("directory", help="Path to the prepared dataset directory (e.g., dataset_prepared)")
+    parser.add_argument("--epochs", type=int, default=15, help="Number of training epochs (default: 15)")
     args = parser.parse_args()
 
     # cuda: NVIDIA GPU, mps: Apple Silicon GPU, cpu: CPU
@@ -199,6 +208,9 @@ def main():
 
     # 1. Load data
     try:
+        train_loader: DataLoader
+        val_loader: DataLoader
+        class_names: list[str]
         train_loader, val_loader, class_names = get_data_loaders(args.directory)
         print(f"Classes found: {class_names}")
     except Exception as e:
@@ -206,7 +218,7 @@ def main():
         sys.exit(1)
 
     # 2. Define model, loss function, optimizer
-    model = SimpleCNN(num_classes=len(class_names)).to(device)
+    model: SimpleCNN = SimpleCNN(num_classes=len(class_names)).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 
@@ -214,17 +226,20 @@ def main():
     best_acc = 0.0
 
     print("\nStarting training...")
-    for epoch in range(EPOCHS):
+    for epoch in range(args.epochs):
         train_loss, train_acc = train(model, train_loader, criterion, optimizer, device)
         val_loss, val_acc = validate(model, val_loader, criterion, device)
 
-        print(f"Epoch [{epoch+1}/{EPOCHS}] "
+        print(f"Epoch [{epoch+1}/{args.epochs}] "
               f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}% | "
               f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
 
         if val_acc > best_acc:
             best_acc = val_acc
             torch.save(model.state_dict(), MODEL_SAVE_NAME)
+            if best_acc >= 95.0:
+                print("Target accuracy reached, stopping training early.")
+                break
 
     print(f"\nTraining finished. Best Validation Accuracy: {best_acc:.2f}%")
     if best_acc < 90:
