@@ -184,7 +184,10 @@ def main():
 
         if val_acc > best_acc:
             best_acc = val_acc
-            torch.save(model.state_dict(), MODEL_SAVE_NAME)
+            torch.save({
+                'model_state_dict': model.state_dict(),
+                'class_names': class_names
+            }, MODEL_SAVE_NAME)
             if best_acc >= 95.0:
                 print("Target accuracy reached, stopping training early.")
                 break
