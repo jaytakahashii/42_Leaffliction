@@ -13,6 +13,7 @@ from tools.SimpleCNN import SimpleCNN
 BATCH_SIZE = 32
 IMG_SIZE = (256, 256)
 MODEL_SAVE_NAME = "leaf_model.pth"
+PREDICT_NAME = "predict.png"
 
 
 def predict(
@@ -70,7 +71,8 @@ def visualize(path: str, disease: str) -> None:
     )
 
     plt.subplots_adjust(top=0.95, bottom=0.05, hspace=0.2)
-    plt.savefig("predict.png")
+    plt.savefig(PREDICT_NAME)
+    print(f"predicated result {PREDICT_NAME} was saved.")
     plt.show()
 
 
