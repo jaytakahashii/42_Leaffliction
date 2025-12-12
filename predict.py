@@ -1,5 +1,4 @@
 import argparse
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import torch
@@ -59,7 +58,7 @@ def visualize(path: str, disease: str) -> None:
     # 右: 加工後画像
     axes[1].imshow(transformed)
     axes[1].axis('off')
-    axes[1].set_title("Transformed")
+    axes[1].set_title(disease)
 
     plt.tight_layout()
     plt.show()
@@ -74,14 +73,14 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available()
                           else "mps" if torch.backends.mps.is_available() else "cpu")
     print(f"Using device: {device}")
-
-    model = SimpleCNN(num_classes=NUM_CLASSES).to(device)
+    checkpoint = torch.load(MODEL_SAVE_NAME, map_location=device)
+    model = SimpleCNN(num_classes=len(checkpoint["class_names"])).to(device)
 
     # 1. Load data
     try:
-        model.load_state_dict(torch.load(MODEL_SAVE_NAME, map_location=device))
+        model.load_state_dict(checkpoint["model_state_dict"])
         class_index = predict(model, device, args.file)
-        visualize(args.file, "")
+        visualize(args.file, checkpoint["class_names"][int(class_index)])
 
     except Exception as e:
         print(e)
