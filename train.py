@@ -132,14 +132,11 @@ def create_submission_zip(source_dir: str, model_path: str, output_zip: str) -> 
     """
     print(f"Creating submission zip: {output_zip}...")
     with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        # モデルを追加
         zipf.write(model_path, arcname=os.path.basename(model_path))
 
-        # データセットディレクトリを追加
         src_path = Path(source_dir)
         for file in tqdm(list(src_path.rglob('*')), desc="Zipping Dataset"):
             if file.is_file():
-                # zip内のパスを dataset_prepared/... から始めるように調整
                 zipf.write(file, arcname=str(file))
     print("Zip created successfully.")
 
