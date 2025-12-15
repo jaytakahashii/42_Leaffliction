@@ -17,6 +17,7 @@ from tools.SimpleCNN import SimpleCNN
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
 IMG_SIZE = (256, 256)
+THRESHOLD_ACCURACY = 97.0
 MODEL_SAVE_NAME = "leaf_model.pth"
 ZIP_NAME = "submission.zip"
 
@@ -185,7 +186,7 @@ def main():
                 'model_state_dict': model.state_dict(),
                 'class_names': class_names
             }, MODEL_SAVE_NAME)
-            if best_acc >= 95.0:
+            if best_acc >= THRESHOLD_ACCURACY:
                 print("Target accuracy reached, stopping training early.")
                 break
 
