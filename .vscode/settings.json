@@ -68,11 +68,14 @@
     "torchvision",
     "tqdm",
     "xlabel",
+    "tqdm",
+    "xlabel",
     "xlim",
     "xticklabels",
     "xticks",
     "ylabel",
     "yticks",
-    "zipf"
+    "zipf",
+    "yticks"
   ]
 }
