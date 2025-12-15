@@ -19,6 +19,7 @@
 
   // --- Spell Check (Allowing ML-specific Terms) ---
   "cSpell.words": [
+    "arcname",
     "argmin",
     "Augmentor",
     "autopct",
@@ -32,6 +33,8 @@
     "fontsize",
     "fromarray",
     "frombuffer",
+    "gridspec",
+    "hspace",
     "hyperparameter",
     "imdecode",
     "imread",
@@ -62,15 +65,17 @@
     "seaborn",
     "sklearn",
     "startangle",
-<<<<<<< HEAD
+    "torchvision",
     "tqdm",
-=======
     "xlabel",
->>>>>>> develop
+    "tqdm",
+    "xlabel",
     "xlim",
     "xticklabels",
     "xticks",
     "ylabel",
+    "yticks",
+    "zipf",
     "yticks"
   ]
 }

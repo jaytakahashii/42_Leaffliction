@@ -162,13 +162,6 @@ def main():
     print(f"Validation data: {DST_DIR}/val")
     print("Don't forget to ZIP the dataset for submission requirements.")
 
-    print("== Count Summary ==")
-    DST_DIR = str(Path(DST_DIR) / "train")
-    scanner = DirectoryScanner(DST_DIR)
-    distribution = scanner.get_distribution()
-    for category, count in distribution.items():
-        print(f"  {category}: {count} images")
-
 
 if __name__ == "__main__":
     main()
