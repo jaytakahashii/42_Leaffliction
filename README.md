@@ -14,8 +14,6 @@
   Built from scratch: Custom CNN architecture, Data Augmentation, and Analytics pipeline.
 </p>
 
-[Report Bug](https://github.com/jaytakahashii/Leaffliction/issues) · [Request Feature](https://github.com/jaytakahashii/Leaffliction/issues)
-
 </div>
 
 ---
@@ -25,6 +23,13 @@
 **Leaffliction** is a deep learning project designed to classify apple leaf pathologies. [cite_start]The system identifies conditions such as **Apple Scab**, **Black Rot**, and **Cedar Apple Rust** from raw images [cite: 66-68].
 
 Unlike using high-level AutoML APIs, this project implements the entire machine learning lifecycle manually—from statistical data analysis and image processing to designing and training a Convolutional Neural Network (CNN) using **PyTorch**. The model achieves high generalization performance through custom data augmentation and strict validation protocols.
+
+### 🤝 Collaboration
+
+This project was a collaborative effort:
+
+- [Jay Takahashi](https://github.com/jaytakahashii)
+- [Koji Watanabe](https://github.com/kojilbj)
 
 ---
 
