@@ -14,8 +14,6 @@
   Built from scratch: Custom CNN architecture, Data Augmentation, and Analytics pipeline.
 </p>
 
-[Report Bug](https://github.com/jaytakahashii/Leaffliction/issues) · [Request Feature](https://github.com/jaytakahashii/Leaffliction/issues)
-
 </div>
 
 ---
