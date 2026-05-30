@@ -24,6 +24,13 @@
 
 Unlike using high-level AutoML APIs, this project implements the entire machine learning lifecycle manually—from statistical data analysis and image processing to designing and training a Convolutional Neural Network (CNN) using **PyTorch**. The model achieves high generalization performance through custom data augmentation and strict validation protocols.
 
+### 🤝 Collaboration
+
+This project was a collaborative effort:
+
+- [Jay Takahashi](https://github.com/jaytakahashii)
+- [Koji Watanabe](https://github.com/kojilbj)
+
 ---
 
 ## 🚀 Technical Highlights
